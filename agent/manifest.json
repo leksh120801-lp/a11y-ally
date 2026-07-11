@@ -1,5 +1,4 @@
 {
-  "$schema": "https://raw.githubusercontent.com/slackapi/manifest-schema/main/manifest.schema.json",
   "display_information": {
     "name": "A11y Ally"
   },
