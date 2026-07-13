@@ -1,4 +1,4 @@
-# A11y Ally — demo script (2–3 min)
+# Cleary — demo script (2–3 min)
 
 Goal: show the accessibility use case working end-to-end, and narrate the MCP
 host/client/server roles explicitly, since that's the required hackathon technology.
@@ -9,10 +9,10 @@ host/client/server roles explicitly, since that's the required hackathon technol
 
 > "Every day, people post dense, jargon-heavy messages in Slack — hard to read, full of
 > acronyms, sometimes images with no alt text. That's invisible to a lot of your
-> teammates. Meet A11y Ally — an agent that reviews Slack content for accessibility
+> teammates. Meet Cleary — an agent that reviews Slack content for accessibility
 > problems and suggests plain-language rewrites, on request, always human-approved."
 
-*(Show the Slack sidebar, click into A11y Ally under Agents.)*
+*(Show the Slack sidebar, click into Cleary under Agents.)*
 
 ---
 

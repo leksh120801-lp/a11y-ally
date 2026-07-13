@@ -17,7 +17,7 @@ def assistant_thread_started(
         logger: Logger instance for error tracking
     """
     try:
-        say("Hi! I'm A11y Ally. I review Slack content for accessibility issues and suggest plain-language rewrites — I never post or edit anything without your say-so.")
+        say("Hi! I'm Cleary. I review Slack content for accessibility issues and suggest plain-language rewrites — I never post or edit anything without your say-so.")
         set_suggested_prompts(
             prompts=[
                 {

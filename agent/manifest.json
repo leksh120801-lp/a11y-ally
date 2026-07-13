@@ -1,6 +1,6 @@
 {
   "display_information": {
-    "name": "A11y Ally"
+    "name": "Cleary"
   },
   "features": {
     "app_home": {
@@ -9,7 +9,7 @@
       "messages_tab_read_only_enabled": false
     },
     "bot_user": {
-      "display_name": "A11y Ally",
+      "display_name": "Cleary",
       "always_online": true
     },
     "assistant_view": {

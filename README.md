@@ -1,4 +1,4 @@
-# A11y Ally
+# Cleary
 
 A Slack agent that reviews a message, thread, or canvas for accessibility problems — poor
 readability, jargon/unexplained acronyms, images missing alt text — and suggests a
@@ -10,7 +10,7 @@ Required hackathon technology: **MCP server integration**.
 
 ## What it does
 
-1. Open A11y Ally from the **Agents** section of the Slack sidebar (or `@mention` it in a
+1. Open Cleary from the **Agents** section of the Slack sidebar (or `@mention` it in a
    channel it's been invited to).
 2. Ask it to review something — "Make this plain-language: ...", "Check this thread for
    accessibility issues", "Does this image have alt text?"
@@ -120,12 +120,12 @@ source .venv/bin/activate
 python app.py
 ```
 
-Look for `⚡️ Bolt app is running!`, then open A11y Ally under **Agents** in Slack's
+Look for `⚡️ Bolt app is running!`, then open Cleary under **Agents** in Slack's
 sidebar.
 
 ## Data hygiene
 
-A11y Ally does not persist any Slack content. It pulls message/thread/canvas text and
+Cleary does not persist any Slack content. It pulls message/thread/canvas text and
 block data live, at the moment of a request, analyzes it in memory, and discards it once
 the turn ends — nothing is written to disk or a database. If we ever add memory across
 turns, it would store only non-content metadata (e.g. a message's grade level, not the
