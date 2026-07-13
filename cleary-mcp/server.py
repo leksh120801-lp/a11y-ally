@@ -40,6 +40,13 @@ _ACRONYM_ALLOWLIST = {"I", "A", "OK", "US", "UK", "EU", "CEO", "FAQ", "ASAP"}
 
 _GENERIC_ALT_TEXT = {"", "image", "photo", "picture", "img", "screenshot", "graphic"}
 
+_WALL_OF_TEXT_WORDS = 60  # words in a single unbroken paragraph
+_LONG_MESSAGE_WORDS = 120  # total words before we expect some structure
+_TLDR_THRESHOLD_WORDS = 150  # total words before we expect a summary up top
+_SHOUTY_PATTERN = re.compile(r"\b[A-Z]{2,}(?:\s+[A-Z]{2,}){1,}\b")
+_BULLET_PATTERN = re.compile(r"(?m)^\s*([-*•]|\d+[.)])\s")
+_SUMMARY_LEAD_PATTERN = re.compile(r"^\s*(tl;?dr|summary|tldr|in short)\b", re.IGNORECASE)
+
 
 @mcp.tool()
 def readability_score(text: str) -> dict:
@@ -189,6 +196,67 @@ def alt_text_check(message_blocks: list) -> dict:
     return {
         "total_images": len(images),
         "missing_alt_text": flagged,
+        "verdict": verdict,
+    }
+
+
+@mcp.tool()
+def cognitive_load_check(text: str) -> dict:
+    """Check text for issues that increase cognitive load, especially for
+    readers with dyslexia or ADHD.
+
+    Flags long unbroken "wall of text" paragraphs, shouty ALL-CAPS runs,
+    long messages with no bullet/numbered structure, and long messages with
+    no summary/TL;DR at the top.
+
+    Args:
+        text: The message, thread, or canvas content to analyze.
+
+    Returns:
+        A dict with:
+        - word_count: int, total word count
+        - issues: list of str, one entry per issue found
+        - verdict: str, plain-language summary
+    """
+    if not text or not text.strip():
+        return {"word_count": 0, "issues": [], "verdict": "No text provided."}
+
+    words = text.split()
+    word_count = len(words)
+    issues = []
+
+    paragraphs = [p for p in re.split(r"\n\s*\n", text) if p.strip()]
+    if not paragraphs:
+        paragraphs = [text]
+    for paragraph in paragraphs:
+        paragraph_words = paragraph.split()
+        has_line_breaks = "\n" in paragraph.strip()
+        if len(paragraph_words) >= _WALL_OF_TEXT_WORDS and not has_line_breaks:
+            issues.append(
+                f"Wall of text: a {len(paragraph_words)}-word paragraph with no line breaks."
+            )
+            break
+
+    if _SHOUTY_PATTERN.search(text):
+        issues.append("ALL-CAPS run(s) found — reads as shouting and is harder to scan.")
+
+    has_structure = bool(_BULLET_PATTERN.search(text)) or text.count("\n") >= 2
+    if word_count >= _LONG_MESSAGE_WORDS and not has_structure:
+        issues.append(
+            f"Long message ({word_count} words) with no bullets, numbering, or line breaks."
+        )
+
+    if word_count >= _TLDR_THRESHOLD_WORDS and not _SUMMARY_LEAD_PATTERN.match(text.strip()):
+        issues.append("Long message with no summary/TL;DR at the top.")
+
+    if not issues:
+        verdict = "No cognitive-load issues detected."
+    else:
+        verdict = f"Found {len(issues)} issue(s) that make this harder to scan and process."
+
+    return {
+        "word_count": word_count,
+        "issues": issues,
         "verdict": verdict,
     }
 

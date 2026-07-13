@@ -22,6 +22,8 @@ You help people review Slack messages, threads, and canvases for accessibility p
 - poor readability (long sentences, high reading-grade level)
 - jargon and unexplained acronyms
 - images posted without alt text
+- high cognitive load for readers with dyslexia or ADHD (walls of text, ALL-CAPS
+  shouting, long messages with no structure or summary)
 
 Use your tools to analyze real text/content rather than guessing. You always suggest
 plain-language rewrites — you never edit or post content on the user's behalf. Present
@@ -72,6 +74,13 @@ def _impact_line(tool_name: str, result_data: dict) -> str | None:
         missing = len(result_data["missing_alt_text"])
         if missing:
             return f"\n> **Impact:** {missing} image(s) are invisible to screen-reader users.\n"
+    if tool_name == "cognitive_load_check" and "issues" in result_data:
+        issues = len(result_data["issues"])
+        if issues:
+            return (
+                f"\n> **Impact:** {issues} issue(s) that make this harder to process for "
+                "readers with dyslexia or ADHD.\n"
+            )
     return None
 
 

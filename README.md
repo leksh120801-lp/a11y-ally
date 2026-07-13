@@ -1,9 +1,10 @@
 # Cleary
 
 A Slack agent that reviews a message, thread, or canvas for accessibility problems — poor
-readability, jargon/unexplained acronyms, images missing alt text — and suggests a
-plain-language rewrite. It never edits or posts anything on its own; every rewrite is
-offered as a one-click suggestion that a human explicitly approves.
+readability, jargon/unexplained acronyms, images missing alt text, and high cognitive
+load for readers with dyslexia or ADHD — and suggests a plain-language rewrite. It never
+edits or posts anything on its own; every rewrite is offered as a one-click suggestion
+that a human explicitly approves.
 
 Built for the Slack **"Agent for Good" hackathon — accessibility track**.
 Required hackathon technology: **MCP server integration**.
@@ -22,16 +23,17 @@ Required hackathon technology: **MCP server integration**.
 ## Architecture: MCP host / client / server
 
 ```
-┌───────────────────────┐        ┌───────────────────────────┐        ┌───────────────────────────┐
-│ Slack side panel      │        │ agent/ (Bolt app)         │        │ cleary-mcp/ (MCP server)  │
-│ HOST                  │◄──────►│ CLIENT                    │◄──────►│ SERVER                    │
-│                       │        │                           │        │                           │
-│ - renders the chat UI │        │ - Gemini (Vertex AI) does │        │ - readability_score(text) │
-│ - streams task cards  │        │   the reasoning           │        │ - find_jargon(text)       │
-│ - Copy/Post buttons   │        │ - starts cleary-mcp over  │        │ - alt_text_check(blocks)  │
-│   (human-in-the-loop) │        │   stdio, lists its tools, │        │                           │
-│                       │        │   calls them on request   │        │ Pure functions, no Slack  │
-└───────────────────────┘        └───────────────────────────┘        └───────────────────────────┘
+┌───────────────────────┐        ┌───────────────────────────┐        ┌──────────────────────────────┐
+│ Slack side panel      │        │ agent/ (Bolt app)         │        │ cleary-mcp/ (MCP server)     │
+│ HOST                  │◄──────►│ CLIENT                    │◄──────►│ SERVER                       │
+│                       │        │                           │        │                              │
+│ - renders the chat UI │        │ - Gemini (Vertex AI) does │        │ - readability_score(text)    │
+│ - streams task cards  │        │   the reasoning           │        │ - find_jargon(text)          │
+│ - Copy/Post buttons   │        │ - starts cleary-mcp over  │        │ - alt_text_check(blocks)     │
+│   (human-in-the-loop) │        │   stdio, lists its tools, │        │ - cognitive_load_check(text) │
+│                       │        │   calls them on request   │        │                              │
+│                       │        │                           │        │ Pure functions, no Slack     │
+└───────────────────────┘        └───────────────────────────┘        └──────────────────────────────┘
 ```
 
 **Agent loop:** receive input → reason (Gemini) → call MCP tool(s) → stream output →
@@ -42,7 +44,7 @@ repeat until a final answer, then present it with human-in-the-loop actions.
 - **Client** — the Bolt agent in `agent/`. Owns the conversation loop: it calls the LLM,
   and whenever the LLM wants to use a tool, the client is the one that actually opens an
   MCP session to `cleary-mcp` and executes it (`agent/listeners/assistant/mcp_client.py`).
-- **Server** — `cleary-mcp/`, a small `FastMCP` server that exposes three accessibility
+- **Server** — `cleary-mcp/`, a small `FastMCP` server that exposes four accessibility
   tools over stdio. It has no idea Slack exists; it just takes text/blocks in and returns
   structured accessibility findings out.
 
@@ -145,8 +147,9 @@ same thread the human is already in.
 - No `message.channels` scope/event — the agent only responds when @mentioned in a
   channel or when talked to directly in its side panel. It does not passively read every
   channel message.
-- `find_jargon` and the alt-text check are heuristic (regex/allowlist-based), not ML
-  models — good enough for a hackathon demo, not a production accessibility auditor.
+- `find_jargon`, the alt-text check, and `cognitive_load_check` are heuristic
+  (regex/allowlist/word-count-based), not ML models — good enough for a hackathon demo,
+  not a production accessibility auditor.
 - Vertex AI model availability is project/region-specific; `gemini-2.5-flash` is what
   worked on our test project — you may need to adjust `MODEL` in
   `agent/listeners/assistant/mcp_client.py` for yours.
