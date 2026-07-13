@@ -17,16 +17,20 @@ def assistant_thread_started(
         logger: Logger instance for error tracking
     """
     try:
-        say("What would you like to do today?")
+        say("Hi! I'm A11y Ally. I review Slack content for accessibility issues and suggest plain-language rewrites — I never post or edit anything without your say-so.")
         set_suggested_prompts(
             prompts=[
                 {
-                    "title": "Prompt a task with thinking steps",
-                    "message": "Wonder a few deep thoughts.",
+                    "title": "Make this plain-language",
+                    "message": "Make this plain-language: ",
                 },
                 {
-                    "title": "Roll dice for a random number",
-                    "message": "Roll two 12-sided dice and three 6-sided dice for a pseudo-random score.",
+                    "title": "Check this thread for accessibility issues",
+                    "message": "Check this thread for accessibility issues.",
+                },
+                {
+                    "title": "Does this image have alt text?",
+                    "message": "Does this image have alt text?",
                 },
             ]
         )

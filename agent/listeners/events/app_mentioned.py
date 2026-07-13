@@ -5,6 +5,7 @@ from slack_sdk import WebClient
 
 from agent.llm_caller import call_llm
 from listeners.views.feedback_block import create_feedback_block
+from listeners.views.rewrite_block import create_rewrite_block
 
 
 def app_mentioned_callback(client: WebClient, event: dict, logger: Logger, say: Say):
@@ -50,12 +51,10 @@ def app_mentioned_callback(client: WebClient, event: dict, logger: Logger, say: 
                 "content": text,
             },
         ]
-        call_llm(streamer, prompts)
+        rewrite = call_llm(streamer, prompts)
 
-        feedback_block = create_feedback_block()
-        streamer.stop(
-            blocks=feedback_block,
-        )
+        blocks = (create_rewrite_block(rewrite) if rewrite else []) + create_feedback_block()
+        streamer.stop(blocks=blocks)
     except Exception as e:
         logger.exception(f"Failed to handle a user message event: {e}")
         say(f":warning: Something went wrong! ({e})")

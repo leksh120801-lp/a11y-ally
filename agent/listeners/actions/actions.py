@@ -39,3 +39,40 @@ def handle_feedback(ack: Ack, body: dict, client: WebClient, logger: Logger):
         logger.debug(f"Handled feedback: type={feedback_type}, message_ts={message_ts}")
     except Exception as error:
         logger.error(f":warning: Something went wrong! {error}")
+
+
+def handle_copy_rewrite(ack: Ack, body: dict, client: WebClient, logger: Logger):
+    """
+    Shows the rewrite text in a code block, visible only to the clicking user,
+    so they can select and copy it themselves. Never posts anything publicly.
+    """
+    try:
+        ack()
+        rewrite_text = body["actions"][0]["value"]
+        client.chat_postEphemeral(
+            channel=body["channel"]["id"],
+            user=body["user"]["id"],
+            thread_ts=body["message"]["ts"],
+            text=f"Here's the rewrite to copy:\n```{rewrite_text}```",
+        )
+    except Exception as error:
+        logger.error(f":warning: Something went wrong! {error}")
+
+
+def handle_post_rewrite(ack: Ack, body: dict, client: WebClient, logger: Logger):
+    """
+    Posts the suggested rewrite into the thread as a real message, but only
+    because a human explicitly clicked "Post rewrite" — the agent never posts
+    a rewrite on its own.
+    """
+    try:
+        ack()
+        rewrite_text = body["actions"][0]["value"]
+        user_id = body["user"]["id"]
+        client.chat_postMessage(
+            channel=body["channel"]["id"],
+            thread_ts=body["message"]["ts"],
+            text=f"Rewrite posted by <@{user_id}>:\n{rewrite_text}",
+        )
+    except Exception as error:
+        logger.error(f":warning: Something went wrong! {error}")
