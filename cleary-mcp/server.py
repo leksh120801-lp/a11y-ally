@@ -1,4 +1,4 @@
-"""a11y-mcp: an MCP server exposing accessibility-review tools for Slack content.
+"""cleary-mcp: an MCP server exposing accessibility-review tools for Slack content.
 
 Host = Slack (the side panel) | Client = the Bolt agent | Server = this process.
 Tools here do the actual accessibility analysis; the agent's LLM decides when to
@@ -10,7 +10,7 @@ import re
 import textstat
 from mcp.server.fastmcp import FastMCP
 
-mcp = FastMCP("a11y-mcp")
+mcp = FastMCP("cleary-mcp")
 
 # Common workplace jargon/buzzwords that hurt plain-language readability even
 # when they aren't acronyms.

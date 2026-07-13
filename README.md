@@ -22,16 +22,16 @@ Required hackathon technology: **MCP server integration**.
 ## Architecture: MCP host / client / server
 
 ```
-┌─────────────────────────┐        ┌──────────────────────────┐        ┌───────────────────────────┐
-│   Slack side panel       │        │   agent/ (Bolt app)       │        │   a11y-mcp/ (MCP server)   │
-│   HOST                   │◄──────►│   CLIENT                  │◄──────►│   SERVER                   │
-│                           │        │                            │        │                             │
-│  - renders the chat UI   │  Bolt  │  - Gemini (Vertex AI) does │  MCP   │  - readability_score(text)  │
-│  - streams task cards    │  API   │    the reasoning           │ stdio  │  - find_jargon(text)        │
-│  - Copy/Post buttons     │        │  - starts a11y-mcp over    │        │  - alt_text_check(blocks)   │
-│    (human-in-the-loop)   │        │    stdio, lists its tools, │        │                             │
-│                           │        │    calls them on request   │        │  Pure functions, no Slack   │
-└─────────────────────────┘        └──────────────────────────┘        └───────────────────────────┘
+┌───────────────────────┐        ┌───────────────────────────┐        ┌───────────────────────────┐
+│ Slack side panel      │        │ agent/ (Bolt app)         │        │ cleary-mcp/ (MCP server)  │
+│ HOST                  │◄──────►│ CLIENT                    │◄──────►│ SERVER                    │
+│                       │        │                           │        │                           │
+│ - renders the chat UI │        │ - Gemini (Vertex AI) does │        │ - readability_score(text) │
+│ - streams task cards  │        │   the reasoning           │        │ - find_jargon(text)       │
+│ - Copy/Post buttons   │        │ - starts cleary-mcp over  │        │ - alt_text_check(blocks)  │
+│   (human-in-the-loop) │        │   stdio, lists its tools, │        │                           │
+│                       │        │   calls them on request   │        │ Pure functions, no Slack  │
+└───────────────────────┘        └───────────────────────────┘        └───────────────────────────┘
 ```
 
 **Agent loop:** receive input → reason (Gemini) → call MCP tool(s) → stream output →
@@ -41,8 +41,8 @@ repeat until a final answer, then present it with human-in-the-loop actions.
   conversation, the streaming task-card UI, and the Block Kit buttons.
 - **Client** — the Bolt agent in `agent/`. Owns the conversation loop: it calls the LLM,
   and whenever the LLM wants to use a tool, the client is the one that actually opens an
-  MCP session to `a11y-mcp` and executes it (`agent/listeners/assistant/mcp_client.py`).
-- **Server** — `a11y-mcp/`, a small `FastMCP` server that exposes three accessibility
+  MCP session to `cleary-mcp` and executes it (`agent/listeners/assistant/mcp_client.py`).
+- **Server** — `cleary-mcp/`, a small `FastMCP` server that exposes three accessibility
   tools over stdio. It has no idea Slack exists; it just takes text/blocks in and returns
   structured accessibility findings out.
 
@@ -53,7 +53,7 @@ repeat until a final answer, then present it with human-in-the-loop actions.
   `slack-samples/bolt-python-assistant-template`
 - **Gemini (`gemini-2.5-flash`) via Vertex AI** as the reasoning LLM, authenticated with
   `gcloud` Application Default Credentials (no API key committed or required)
-- A custom MCP server (`a11y-mcp/`) built with the official Python MCP SDK (`mcp[cli]`)
+- A custom MCP server (`cleary-mcp/`) built with the official Python MCP SDK (`mcp[cli]`)
   and [`textstat`](https://pypi.org/project/textstat/) for readability scoring
 - Socket Mode for local dev/demo — no public URL or ngrok tunnel required
 
@@ -97,10 +97,10 @@ gcloud auth application-default login
 gcloud services enable aiplatform.googleapis.com --project=your-gcp-project-id
 ```
 
-### 3. MCP server (`a11y-mcp/`)
+### 3. MCP server (`cleary-mcp/`)
 
 ```
-cd a11y-mcp
+cd cleary-mcp
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 ```

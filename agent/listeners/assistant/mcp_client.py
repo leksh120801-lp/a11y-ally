@@ -1,7 +1,7 @@
-"""MCP client: the Bolt agent (client) connects to a11y-mcp (server) over stdio
+"""MCP client: the Bolt agent (client) connects to cleary-mcp (server) over stdio
 so Gemini (reasoning) can call its accessibility tools.
 
-Host = Slack side panel | Client = this module | Server = a11y-mcp/server.py.
+Host = Slack side panel | Client = this module | Server = cleary-mcp/server.py.
 Agent loop: receive input -> reason (Gemini) -> call MCP tool(s) -> stream output -> repeat.
 """
 
@@ -39,7 +39,7 @@ MAX_TOOL_ROUNDS = 4
 
 _AGENT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 _REPO_ROOT = os.path.dirname(_AGENT_DIR)
-_MCP_DIR = os.path.join(_REPO_ROOT, "a11y-mcp")
+_MCP_DIR = os.path.join(_REPO_ROOT, "cleary-mcp")
 _MCP_PYTHON = os.path.join(_MCP_DIR, ".venv", "bin", "python3")
 
 _SERVER_PARAMS = StdioServerParameters(
@@ -92,7 +92,7 @@ async def _mcp_tools_to_gemini_tools(session: ClientSession) -> list[types.Tool]
 
 
 async def run_agent_turn(streamer: ChatStream, prompts: list[dict]) -> str | None:
-    """Run one agent turn: reason with Gemini, call a11y-mcp tools as needed, stream the answer.
+    """Run one agent turn: reason with Gemini, call cleary-mcp tools as needed, stream the answer.
 
     Returns the suggested rewrite text if the model proposed one, else None.
 

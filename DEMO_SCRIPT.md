@@ -22,12 +22,12 @@ host/client/server roles explicitly, since that's the required hackathon technol
 > side panel — is the **host**. My Bolt agent, running locally, is the **client**: it's
 > the thing that actually talks to Slack and to the LLM. And the accessibility logic
 > itself — readability scoring, jargon detection, alt-text checking — lives in a
-> completely separate process I built: a custom MCP **server** called a11y-mcp. The
+> completely separate process I built: a custom MCP **server** called cleary-mcp. The
 > client starts that server, asks it what tools it has, and calls them over the Model
 > Context Protocol whenever the LLM decides it needs one."
 
 *(Optional: briefly show the architecture diagram from the README, or the three folders
-in the repo — `agent/`, `a11y-mcp/`.)*
+in the repo — `agent/`, `cleary-mcp/`.)*
 
 ---
 
@@ -39,7 +39,7 @@ in the repo — `agent/`, `a11y-mcp/`.)*
 paradigms necessitates a comprehensive reevaluation of preexisting infrastructural
 frameworks.")*
 
-> "Watch the task card — it's calling `readability_score` on the a11y-mcp server right
+> "Watch the task card — it's calling `readability_score` on the cleary-mcp server right
 > now, over MCP, live."
 
 *(Point at the task-card step appearing.)*
